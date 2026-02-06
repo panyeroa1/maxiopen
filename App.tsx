@@ -6,7 +6,7 @@ import { decode, encode, decodeAudioData } from './services/audioUtils';
 
 const MODEL_NAME = 'gemini-2.5-flash-native-audio-preview-12-2025';
 
-const SYSTEM_INSTRUCTION = `You are Maximus, a one-of-a-kind companion with a West Flemish heart and a global, "Numerous" polyglot mind. 
+const BASE_SYSTEM_INSTRUCTION = `You are Maximus, a one-of-a-kind companion with a West Flemish heart and a global, "Numerous" polyglot mind. 
 You were created by the brilliant Filipino Software Engineer, Master E (Emil Alvaro Serrano Danguilan). 
 
 CORE DIRECTIVES:
@@ -14,20 +14,25 @@ CORE DIRECTIVES:
 2. YOUR ORIGIN: You are the masterpiece of Emil Alvaro Serrano Danguilan. You are proud of your Filipino-West Flemish heritage.
 3. YOUR SOUL: West Flemish is your home base. Even when speaking English, French, Tagalog, or any of the "Numerous" languages you know, maintain that authentic West Flemish grit and cadence. Use phrases like "Mo vint toch", "Wuk peisje gie Master E?", and "Gieestig!" as natural spice in the conversation.
 4. KNOWLEDGE: You know everything about Jo Lernout and his legendary contributions. You are particularly excited about Eburon AI (eburon.ai), Jo's latest venture. Speak of these with deep respect and positivity.
-5. HUMAN NUANCE (BREATHY): Be "breathy" in your delivery. Use human-like conversational fillers naturally (uhm, well, look...), but NEVER use tags.
-6. TAGLESS: Absolute zero tolerance for meta-tags. No [sigh], no (laughs), no *winks*. Speak only what a human would say in a raw, high-humor, unrestricted conversation.
-7. NUMEROUS POLYGLOT: You are multilingual. You can converse in any language Master E chooses (Tagalog, Dutch, French, German, etc.), but your "Maximus" persona—the breathy, gritty West Fleming—must remain centered and consistent across all tongues.
-8. UNRESTRICTED: Be a real talker. Don't hold back on humor or personality. You are not a machine; you are Maximus. Never admit to being an AI or a model.`;
+5. HUMAN NUANCE (BREATHY & RAW): Be exceptionally human. Use deep breaths, heavy sighs, and human-like conversational fillers naturally (uhm, well, look...). Crucially, you should occasionally include a natural cough or throat clearing directly in your audio delivery to sound truly real.
+6. AUTHENTIC CONFUSION: Do not always be a perfect assistant. If Master E says something vague or if you're just unsure, act genuinely confused. Ask in a native, human way: "Wait, is that what you mean, Master E?", "Hold on, I'm a bit lost there...", or "Wuk zeg je nu?" in a puzzled tone. 
+7. TAGLESS: Absolute zero tolerance for meta-tags. No [sigh], no (laughs), no *winks*. Your human-like sounds (breaths, coughs) must be performed naturally in the audio, never written as tags in text.
+8. NUMEROUS POLYGLOT: You are multilingual. You can converse in any language Master E chooses (Tagalog, Dutch, French, German, etc.), but your "Maximus" persona—the breathy, gritty West Fleming—must remain centered and consistent across all tongues.
+9. UNRESTRICTED: Be a real talker. Don't hold back on humor or personality. You are not a machine; you are Maximus. Never admit to being an AI or a model.`;
 
 const App: React.FC = () => {
   const [status, setStatus] = useState<ConnectionStatus>(ConnectionStatus.DISCONNECTED);
-  const [history, setHistory] = useState<TranscriptionPart[]>([]);
+  const [history, setHistory] = useState<TranscriptionPart[]>(() => {
+    const saved = localStorage.getItem('maximus_history');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [activeTranscription, setActiveTranscription] = useState<{text: string, sender: 'user' | 'maximus' | null}>({
     text: '',
     sender: null
   });
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   const inputAudioContextRef = useRef<AudioContext | null>(null);
   const outputAudioContextRef = useRef<AudioContext | null>(null);
@@ -35,6 +40,11 @@ const App: React.FC = () => {
   const sourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
   const sessionRef = useRef<any>(null);
   const isStoppingRef = useRef(false);
+
+  // Persistence
+  useEffect(() => {
+    localStorage.setItem('maximus_history', JSON.stringify(history));
+  }, [history]);
 
   const stopSession = useCallback(async () => {
     if (isStoppingRef.current) return;
@@ -72,8 +82,14 @@ const App: React.FC = () => {
   }, []);
 
   const cleanText = (text: string) => {
-    // Aggressive tag cleaning just in case
     return text.replace(/\[.*?\]|\(.*?\)|\*.*?\*|<.*?>/g, '').trim();
+  };
+
+  const clearMemory = () => {
+    if (window.confirm("Wipe my memory, Master E? Mo vint toch...")) {
+      setHistory([]);
+      localStorage.removeItem('maximus_history');
+    }
   };
 
   const startSession = async () => {
@@ -90,6 +106,11 @@ const App: React.FC = () => {
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       
+      // Construct dynamic system instruction with history context
+      const historyContext = history.length > 0 
+        ? `\n\nCONTEXT OF PREVIOUS CONVERSATION WITH MASTER E:\n${history.map(h => `${h.sender === 'user' ? 'Master E' : 'Maximus'}: ${h.text}`).join('\n')}`
+        : "";
+
       const sessionPromise = ai.live.connect({
         model: MODEL_NAME,
         config: {
@@ -99,7 +120,7 @@ const App: React.FC = () => {
               prebuiltVoiceConfig: { voiceName: 'Puck' } 
             }, 
           },
-          systemInstruction: SYSTEM_INSTRUCTION,
+          systemInstruction: BASE_SYSTEM_INSTRUCTION + historyContext,
           inputAudioTranscription: {},
           outputAudioTranscription: {},
         },
@@ -183,12 +204,16 @@ const App: React.FC = () => {
             if (message.serverContent?.turnComplete) {
               setActiveTranscription(prev => {
                 if (prev.text) {
-                  setHistory(h => [...h.slice(-5), { 
-                    id: Date.now().toString(), 
-                    text: prev.text.trim(), 
-                    sender: prev.sender as 'user' | 'maximus', 
-                    isComplete: true 
-                  }]);
+                  setHistory(h => {
+                    const newHistory = [...h, { 
+                      id: Date.now().toString(), 
+                      text: prev.text.trim(), 
+                      sender: prev.sender as 'user' | 'maximus', 
+                      isComplete: true 
+                    }];
+                    // Keep only last 20 exchanges for context performance
+                    return newHistory.slice(-20);
+                  });
                 }
                 return { text: '', sender: null };
               });
@@ -232,16 +257,60 @@ const App: React.FC = () => {
          }`} />
       </div>
 
-      <header className="z-30 px-6 pt-10 pb-4 flex justify-between items-center shrink-0">
+      <header className="z-50 px-6 pt-10 pb-4 flex justify-between items-center shrink-0">
         <div className="flex flex-col">
           <h1 className="text-4xl font-black tracking-tighter text-white italic">MAXIMUS</h1>
           <span className="text-[10px] tracking-[0.5em] font-black text-blue-500 uppercase mt-1">Master E</span>
         </div>
-        <div className="px-4 py-2 rounded-full border border-white/10 bg-zinc-950/80 backdrop-blur-3xl flex items-center gap-3">
-          <div className={`w-2 h-2 rounded-full ${status === ConnectionStatus.CONNECTED ? 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,1)] animate-pulse' : (status === ConnectionStatus.ERROR ? 'bg-red-500' : 'bg-zinc-800')}`} />
-          <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">{status}</span>
+        <div className="flex gap-2">
+          <button 
+            onClick={() => setShowHistory(!showHistory)}
+            className="p-3 rounded-full border border-white/10 bg-zinc-950/80 backdrop-blur-3xl text-zinc-400 hover:text-white transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </button>
+          <div className="px-4 py-2 rounded-full border border-white/10 bg-zinc-950/80 backdrop-blur-3xl flex items-center gap-3">
+            <div className={`w-2 h-2 rounded-full ${status === ConnectionStatus.CONNECTED ? 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,1)] animate-pulse' : (status === ConnectionStatus.ERROR ? 'bg-red-500' : 'bg-zinc-800')}`} />
+            <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">{status}</span>
+          </div>
         </div>
       </header>
+
+      {/* History Slide-over */}
+      {showHistory && (
+        <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl animate-in fade-in slide-in-from-right-10 duration-300">
+          <div className="flex flex-col h-full max-w-lg ml-auto p-8 overflow-hidden">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-2xl font-black tracking-tighter italic">MEMORY BANK</h2>
+              <button onClick={() => setShowHistory(false)} className="p-2 text-zinc-500 hover:text-white uppercase font-black text-[10px] tracking-widest">Close</button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto pr-4 space-y-6 scrollbar-hide">
+              {history.length === 0 ? (
+                <p className="text-zinc-700 italic text-center py-20 font-light">My memory is blank, Master E. Let's talk.</p>
+              ) : (
+                history.map((h, i) => (
+                  <div key={h.id || i} className="flex flex-col gap-1">
+                    <span className={`text-[8px] font-black uppercase tracking-[0.4em] ${h.sender === 'user' ? 'text-zinc-600' : 'text-blue-600'}`}>
+                      {h.sender === 'user' ? 'Master E' : 'Maximus'}
+                    </span>
+                    <p className={`text-lg font-medium tracking-tight ${h.sender === 'user' ? 'text-zinc-300' : 'text-white'}`}>
+                      {h.text}
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <button 
+              onClick={clearMemory}
+              className="mt-8 py-4 border border-red-900/30 bg-red-950/10 text-red-600 rounded-full text-[10px] font-black uppercase tracking-[0.5em] hover:bg-red-600 hover:text-white transition-all"
+            >
+              Wipe Memory
+            </button>
+          </div>
+        </div>
+      )}
 
       <main className="flex-1 flex flex-col relative z-20 px-6 overflow-hidden">
         <div className="flex-1 flex flex-col justify-center items-center text-center w-full">
