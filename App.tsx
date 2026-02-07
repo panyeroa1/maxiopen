@@ -360,7 +360,7 @@ const App: React.FC = () => {
             responseModalities: [Modality.AUDIO],
             speechConfig: {
               voiceConfig: {
-                prebuiltVoiceConfig: { voiceName: 'Kore' },
+                prebuiltVoiceConfig: { voiceName: 'Aoede' },
               },
             },
             systemInstruction,
@@ -622,7 +622,7 @@ const App: React.FC = () => {
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 px-6 py-6 flex justify-between items-start">
         <div className="flex items-center">
-          <svg width="24" height="24" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-olive-700">
+          <svg width="24" height="24" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M20 0C8.9543 0 0 8.9543 0 20C0 31.0457 8.9543 40 20 40C31.0457 40 40 31.0457 40 20C40 8.9543 31.0457 0 20 0ZM20 30C14.4772 30 10 25.5228 10 20C10 14.4772 14.4772 10 20 10C25.5228 10 30 14.4772 30 20C30 25.5228 25.5228 30 20 30Z" fill="#586332" />
             <path d="M12 20C12 15.5817 15.5817 12 20 12V28C15.5817 28 12 24.4183 12 20Z" fill="#8B9D61" />
           </svg>
@@ -657,18 +657,18 @@ const App: React.FC = () => {
           {/* Glow effect */}
           <div
             className={`absolute inset-0 rounded-full transition-all duration-[1500ms] ${isSpeaking
-              ? 'bg-[#8B9D61]/30 blur-[80px] scale-150'
-              : status === ConnectionStatus.CONNECTED
-                ? 'bg-[#8B9D61]/20 blur-[40px] scale-125'
-                : 'bg-transparent'
+                ? 'bg-[#8B9D61]/30 blur-[80px] scale-150'
+                : status === ConnectionStatus.CONNECTED
+                  ? 'bg-[#8B9D61]/20 blur-[40px] scale-125'
+                  : 'bg-transparent'
               }`}
           />
 
           {/* Main orb */}
           <div
             className={`relative w-56 h-56 rounded-full flex items-center justify-center transition-all duration-700 ${status === ConnectionStatus.CONNECTED
-              ? 'bg-[#C7D1A7] shadow-[inset_0_-8px_16px_rgba(0,0,0,0.1),0_20px_40px_rgba(88,99,50,0.15)] scale-100'
-              : 'bg-slate-200 shadow-lg scale-95 group-hover:scale-100'
+                ? 'bg-[#C7D1A7] shadow-[inset_0_-8px_16px_rgba(0,0,0,0.1),0_20px_40px_rgba(88,99,50,0.15)] scale-100'
+                : 'bg-slate-200 shadow-lg scale-95 group-hover:scale-100'
               }`}
           >
             {/* Visualizer inside orb */}
@@ -680,12 +680,11 @@ const App: React.FC = () => {
                       key={i}
                       className="w-1 rounded-full bg-[#586332]/60 transition-all duration-75"
                       style={{
-                        height:
-                          isSpeaking
-                            ? `${20 + Math.sin(Date.now() / 100 + i * 0.8) * 30 + 30}px`
-                            : isListening
-                              ? `${10 + Math.random() * 20}px`
-                              : '8px',
+                        height: isSpeaking
+                          ? `${20 + Math.sin(Date.now() / 100 + i * 0.8) * 30 + 30}px`
+                          : isListening
+                            ? `${10 + Math.random() * 20}px`
+                            : '8px'
                       }}
                     />
                   ))}
