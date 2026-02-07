@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GoogleGenAI, Modality, LiveServerMessage } from '@google/genai';
 import { ConnectionStatus, TranscriptionPart } from './types';
 import { decode, encode, decodeAudioData } from './services/audioUtils';
+import './App.css';
 
 const MODEL_NAME = 'gemini-2.5-flash-native-audio-preview-12-2025';
 
@@ -678,15 +679,14 @@ const App: React.FC = () => {
                   {[...Array(12)].map((_, i) => (
                     <div
                       key={i}
-                      className="w-1 rounded-full bg-[#586332]/60 transition-all duration-75"
+                      className="visualizer-bar"
                       style={{
-                        height: 'var(--bar-h, 8px)',
-                        '--bar-h': isSpeaking
+                        height: isSpeaking
                           ? `${20 + Math.sin(Date.now() / 100 + i * 0.8) * 30 + 30}px`
                           : isListening
                             ? `${10 + Math.random() * 20}px`
                             : '8px'
-                      } as React.CSSProperties}
+                      }}
                     />
                   ))}
                 </div>
