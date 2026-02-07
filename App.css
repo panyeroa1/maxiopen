@@ -3,16 +3,5 @@
   border-radius: 9999px;
   background-color: rgba(88, 99, 50, 0.6);
   transition: all 75ms;
-}
-
-@keyframes pulse-speaking {
-  0% { height: 10px; }
-  50% { height: 40px; }
-  100% { height: 10px; }
-}
-
-@keyframes pulse-listening {
-  0% { height: 8px; }
-  50% { height: 15px; }
-  100% { height: 8px; }
+  height: var(--bar-h, 8px);
 }

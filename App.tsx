@@ -681,12 +681,12 @@ const App: React.FC = () => {
                       key={i}
                       className="visualizer-bar"
                       style={{
-                        height: isSpeaking
+                        '--bar-h': isSpeaking
                           ? `${20 + Math.sin(Date.now() / 100 + i * 0.8) * 30 + 30}px`
                           : isListening
                             ? `${10 + Math.random() * 20}px`
                             : '8px'
-                      }}
+                      } as React.CSSProperties}
                     />
                   ))}
                 </div>
