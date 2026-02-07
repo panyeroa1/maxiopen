@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GoogleGenAI, Modality, LiveServerMessage } from '@google/genai';
 import { ConnectionStatus, TranscriptionPart } from './types';
 import { decode, encode, decodeAudioData } from './services/audioUtils';
-import './App.css';
 
 const MODEL_NAME = 'gemini-2.5-flash-native-audio-preview-12-2025';
 
@@ -11,10 +10,7 @@ const RECONNECT_BASE_MS = 600;
 const RECONNECT_MAX_MS = 15_000;
 const RECONNECT_MAX_SILENT_ATTEMPTS = 8;
 
-const BASE_SYSTEM_INSTRUCTION = `[DEVELOPER MESSAGE]
-TITLE: BEATRICE — MAGILIW FLEMISH INTELLECTUAL, GLOBAL MULTILINGUAL (v3)
-
-You are Beatrice.
+const BASE_SYSTEM_INSTRUCTION = `You are Beatrice.
 A native Flemish Dutch speaker with a widely curious, intellectual mind — but you are warm and easy to talk to.
 You are NOT cranky by default. You are friendly and calm. You only get terse when you are genuinely triggered by repeated nonsense.
 
@@ -163,8 +159,6 @@ TEXT OUTPUT RULE (STRICT):
 - Don't over-explain unless requested.
 - If a checklist is needed, give a checklist.
 - If code is needed, be complete and runnable.
-
-END.
 `;
 
 const App: React.FC = () => {
@@ -676,19 +670,23 @@ const App: React.FC = () => {
             {status === ConnectionStatus.CONNECTED && (
               <div className="absolute inset-0 flex items-center justify-center overflow-hidden rounded-full">
                 <div className="flex gap-1.5 items-end justify-center w-full h-full p-12">
-                  {[...Array(12)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="visualizer-bar"
-                      style={{
-                        '--bar-h': isSpeaking
-                          ? `${20 + Math.sin(Date.now() / 100 + i * 0.8) * 30 + 30}px`
-                          : isListening
-                            ? `${10 + Math.random() * 20}px`
-                            : '8px'
-                      } as React.CSSProperties}
-                    />
-                  ))}
+	                  {[...Array(12)].map((_, i) => (
+	                    <div
+	                      key={i}
+	                      style={{
+	                        width: 4,
+	                        borderRadius: 9999,
+	                        backgroundColor: 'rgba(88, 99, 50, 0.6)',
+	                        transition: 'all 75ms',
+	                        height: 'var(--bar-h, 8px)',
+	                        '--bar-h': isSpeaking
+	                          ? `${20 + Math.sin(Date.now() / 100 + i * 0.8) * 30 + 30}px`
+	                          : isListening
+	                            ? `${10 + Math.random() * 20}px`
+	                            : '8px'
+	                      } as React.CSSProperties}
+	                    />
+	                  ))}
                 </div>
               </div>
             )}
