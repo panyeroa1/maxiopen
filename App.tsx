@@ -620,25 +620,30 @@ const App: React.FC = () => {
   return (
     <div className="relative min-h-[100dvh] w-full bg-gradient-to-b from-slate-50 to-slate-100 overflow-hidden font-sans">
       {/* Header */}
-      <header className="absolute top-0 left-0 right-0 px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-amber-600 to-amber-700 rounded-lg" />
+      <header className="absolute top-0 left-0 right-0 px-6 py-6 flex justify-between items-start">
+        <div className="flex items-center">
+          <svg width="24" height="24" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-olive-700">
+            <path d="M20 0C8.9543 0 0 8.9543 0 20C0 31.0457 8.9543 40 20 40C31.0457 40 40 31.0457 40 20C40 8.9543 31.0457 0 20 0ZM20 30C14.4772 30 10 25.5228 10 20C10 14.4772 14.4772 10 20 10C25.5228 10 30 14.4772 30 20C30 25.5228 25.5228 30 20 30Z" fill="#586332" />
+            <path d="M12 20C12 15.5817 15.5817 12 20 12V28C15.5817 28 12 24.4183 12 20Z" fill="#8B9D61" />
+          </svg>
         </div>
-        <div className="flex flex-col items-center flex-1">
-          <h1 className="text-2xl font-bold text-amber-800 tracking-tight">
-            Beatrice {status === ConnectionStatus.CONNECTED && formatTime(callDuration)}
+        <div className="flex flex-col items-center flex-1 mt-1">
+          <h1 className="text-2xl font-bold text-[#586332] tracking-tight flex items-center gap-2">
+            Beatrice <span className="font-medium opacity-90">{status === ConnectionStatus.CONNECTED && formatTime(callDuration)}</span>
           </h1>
-          <span className="text-xs text-amber-600/60 tracking-wide">by eburon</span>
+          <span className="text-[10px] text-slate-400 font-medium tracking-wide">by eburon</span>
         </div>
         <button
           onClick={() => setShowHistory(!showHistory)}
           aria-label="History"
-          className="p-2 rounded-full text-amber-700/50 hover:text-amber-700 transition-colors"
+          className="p-1 rounded-full text-[#586332]/40 hover:text-[#586332] transition-colors"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="12" r="10" />
-            <polyline points="12 6 12 12 16 14" />
-          </svg>
+          <div className="w-8 h-8 rounded-full bg-white shadow-sm border border-slate-100 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+          </div>
         </button>
       </header>
 
@@ -647,42 +652,41 @@ const App: React.FC = () => {
         <button
           onClick={toggle}
           disabled={status === ConnectionStatus.CONNECTING}
-          className="relative group"
+          className="relative group outline-none"
         >
           {/* Glow effect */}
           <div
-            className={`absolute inset-0 rounded-full transition-all duration-700 ${isSpeaking
-                ? 'bg-amber-300/40 blur-3xl scale-125'
+            className={`absolute inset-0 rounded-full transition-all duration-[1500ms] ${isSpeaking
+                ? 'bg-[#8B9D61]/30 blur-[80px] scale-150'
                 : status === ConnectionStatus.CONNECTED
-                  ? 'bg-emerald-300/30 blur-2xl scale-110'
+                  ? 'bg-[#8B9D61]/20 blur-[40px] scale-125'
                   : 'bg-transparent'
               }`}
           />
 
           {/* Main orb */}
           <div
-            className={`relative w-48 h-48 rounded-full flex items-center justify-center transition-all duration-300 ${status === ConnectionStatus.CONNECTED
-                ? 'bg-gradient-to-br from-amber-100 to-amber-200/80 shadow-2xl scale-100'
-                : 'bg-gradient-to-br from-slate-100 to-slate-200/60 shadow-xl scale-95 group-hover:scale-100'
+            className={`relative w-56 h-56 rounded-full flex items-center justify-center transition-all duration-700 ${status === ConnectionStatus.CONNECTED
+                ? 'bg-[#C7D1A7] shadow-[inset_0_-8px_16px_rgba(0,0,0,0.1),0_20px_40px_rgba(88,99,50,0.15)] scale-100'
+                : 'bg-slate-200 shadow-lg scale-95 group-hover:scale-100'
               }`}
           >
-            {/* Inner visualizer rings */}
+            {/* Visualizer inside orb */}
             {status === ConnectionStatus.CONNECTED && (
-              <div className="absolute inset-8 flex items-center justify-center">
-                <div className="flex gap-1 items-end h-16">
-                  {[...Array(11)].map((_, i) => (
+              <div className="absolute inset-0 flex items-center justify-center overflow-hidden rounded-full">
+                <div className="flex gap-1.5 items-end justify-center w-full h-full p-12">
+                  {[...Array(12)].map((_, i) => (
                     <div
                       key={i}
-                      className={`w-1 rounded-full transition-all ${isSpeaking ? 'bg-amber-600' : isListening ? 'bg-amber-400/60' : 'bg-amber-300/40'
+                      className={`w-1 rounded-full transition-all duration-75 ${isSpeaking ? 'bg-[#586332]/60' : isListening ? 'bg-[#586332]/30' : 'bg-[#586332]/10'
                         }`}
                       style={{
                         height:
                           isSpeaking
-                            ? `${12 + Math.sin(Date.now() / 120 + i * 0.7) * 24 + 24}px`
+                            ? `${20 + Math.sin(Date.now() / 100 + i * 0.8) * 30 + 30}px`
                             : isListening
-                              ? `${12 + Math.random() * 16}px`
-                              : '12px',
-                        transition: 'height 0.08s ease-out',
+                              ? `${10 + Math.random() * 20}px`
+                              : '8px',
                       }}
                     />
                   ))}
@@ -690,12 +694,12 @@ const App: React.FC = () => {
               </div>
             )}
 
-            {/* Status icon */}
+            {/* Status icon when disconnected */}
             {status !== ConnectionStatus.CONNECTED && (
               <svg
                 viewBox="0 0 24 24"
                 fill="currentColor"
-                className={`w-12 h-12 ${status === ConnectionStatus.CONNECTING ? 'text-slate-400 animate-pulse' : 'text-amber-600'}`}
+                className={`w-14 h-14 ${status === ConnectionStatus.CONNECTING ? 'text-slate-400 animate-pulse' : 'text-slate-400/80'}`}
               >
                 <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
                 <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
@@ -706,25 +710,27 @@ const App: React.FC = () => {
 
         {/* Transcription overlay */}
         {activeTranscription.text && (
-          <div className="absolute bottom-32 left-6 right-6 text-center animate-in fade-in duration-200">
-            <p className={`text-xs uppercase tracking-wider mb-1 ${activeTranscription.sender === 'user' ? 'text-slate-500' : 'text-amber-700'}`}>
-              {activeTranscription.sender === 'user' ? 'You' : 'Beatrice'}
+          <div className="absolute bottom-40 left-8 right-8 text-center animate-in slide-in-from-bottom-2 fade-in duration-500">
+            <p className={`text-[10px] uppercase font-bold tracking-[3px] mb-2 opacity-40 ${activeTranscription.sender === 'user' ? 'text-slate-600' : 'text-[#586332]'}`}>
+              {activeTranscription.sender === 'user' ? 'USER' : 'BEATRICE'}
             </p>
-            <p className={`text-lg leading-relaxed ${activeTranscription.sender === 'user' ? 'text-slate-600' : 'text-slate-800'}`}>{activeTranscription.text}</p>
+            <p className={`text-xl font-medium tracking-tight leading-tight ${activeTranscription.sender === 'user' ? 'text-slate-600' : 'text-[#2C3119]'}`}>
+              {activeTranscription.text}
+            </p>
           </div>
         )}
       </div>
 
       {/* Bottom Controls */}
-      <div className="absolute bottom-0 left-0 right-0 p-6">
-        <div className="bg-amber-50/80 backdrop-blur-sm rounded-3xl shadow-lg border border-amber-100/50 p-5 flex items-center justify-around max-w-md mx-auto">
+      <div className="absolute bottom-10 left-0 right-0 px-6">
+        <div className="bg-[#f2f4e8]/90 backdrop-blur-md rounded-[32px] shadow-sm border border-white/50 p-3 flex items-center justify-between max-w-sm mx-auto">
           <button
             onClick={() => setIsMuted(!isMuted)}
             disabled={status !== ConnectionStatus.CONNECTED}
-            className={`flex flex-col items-center gap-1 px-6 py-2 transition-colors ${status !== ConnectionStatus.CONNECTED ? 'opacity-30' : isMuted ? 'text-red-600' : 'text-slate-700 hover:text-slate-900'
+            className={`flex-1 flex items-center justify-center gap-2 py-4 px-4 rounded-2xl transition-all ${status !== ConnectionStatus.CONNECTED ? 'opacity-20' : isMuted ? 'text-red-500 bg-red-50' : 'text-[#586332] hover:bg-[#586332]/5'
               }`}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               {isMuted ? (
                 <>
                   <line x1="1" y1="1" x2="23" y2="23" />
@@ -741,17 +747,19 @@ const App: React.FC = () => {
                 </>
               )}
             </svg>
-            <span className="text-xs font-medium">{isMuted ? 'Unmute' : 'Mute'}</span>
+            <span className="text-[15px] font-semibold">{isMuted ? 'Unmute' : 'Mute'}</span>
           </button>
+
+          <div className="w-px h-8 bg-slate-200 mx-1" />
 
           <button
             onClick={status === ConnectionStatus.CONNECTED ? stopSessionHard : undefined}
             disabled={status !== ConnectionStatus.CONNECTED}
-            className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium text-sm transition-all ${status !== ConnectionStatus.CONNECTED ? 'bg-slate-200 text-slate-400' : 'bg-red-500 text-white hover:bg-red-600 active:scale-95'
+            className={`flex-1 flex items-center justify-center gap-2 py-4 px-4 rounded-2xl transition-all ${status !== ConnectionStatus.CONNECTED ? 'opacity-20' : 'text-[#ff4b5c] hover:bg-red-50 active:scale-95'
               }`}
           >
-            <div className="w-3 h-3 bg-white rounded-sm" />
-            End call
+            <div className="w-3.5 h-3.5 bg-[#ff4b5c] rounded-[3px]" />
+            <span className="text-[15px] font-semibold text-[#2C3119]">End call</span>
           </button>
         </div>
       </div>
