@@ -62,3 +62,68 @@ Test result:
 
 Known limitations or follow-up tasks:
 - None
+
+------------------------------------------------------------
+STANDARD TASK BLOCK
+------------------------------------------------------------
+
+Task ID: T-0002
+Title: Beatrice Persona & Orb UI Redesign
+Status: DONE
+Owner: Miles
+Related repo or service: maxiopen
+Branch: main
+Created: 2026-02-07 13:28
+Last updated: 2026-02-07 13:38
+
+START LOG (fill this before you start coding)
+
+Timestamp: 2026-02-07 13:28
+Current behavior or state:
+- Static grid UI with simple visualizer.
+- System instructions for Beatrice v1/v2 need human nuance update.
+
+Plan and scope for this task:
+- Redesign UI with centered Orb and Timer.
+- Update persona to Beatrice v3 (Magiliw, intellectual, human nuances).
+- Add bottom controls (Mute, End call).
+- Commit all changes.
+
+Files or modules expected to change:
+- App.tsx
+- index.html
+
+Risks or things to watch out for:
+- State management for timer and mute.
+- Visualizer animation performance.
+
+WORK CHECKLIST
+
+- [x] Implement Beatrice v3 persona with human nuances
+- [x] Redesign UI with centered Orb visualizer
+- [x] Implement call timer and header redesign
+- [x] Add bottom control bar (Mute/End call)
+- [x] Fix accessibility lint issues
+- [x] Verify final UI against reference image
+
+END LOG (fill this after you finish coding and testing)
+
+Timestamp: 2026-02-07 13:38
+Summary of what actually changed:
+- Complete UI overhaul: Centered pulsing Orb with internal visualizer.
+- New header with real-time call duration timer.
+- New bottom control bar for Mute and Ending calls.
+- Updated Beatrice v3 persona instructions with multilingual support and human quirks.
+
+Files actually modified:
+- App.tsx
+- index.html
+
+How it was tested:
+- Static analysis of UI components and state logic.
+- Verified timer and visualizer animations.
+
+Test result:
+- PASS
+
+Known limitations or follow-up tasks:
