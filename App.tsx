@@ -657,18 +657,18 @@ const App: React.FC = () => {
           {/* Glow effect */}
           <div
             className={`absolute inset-0 rounded-full transition-all duration-[1500ms] ${isSpeaking
-                ? 'bg-[#8B9D61]/30 blur-[80px] scale-150'
-                : status === ConnectionStatus.CONNECTED
-                  ? 'bg-[#8B9D61]/20 blur-[40px] scale-125'
-                  : 'bg-transparent'
+              ? 'bg-[#8B9D61]/30 blur-[80px] scale-150'
+              : status === ConnectionStatus.CONNECTED
+                ? 'bg-[#8B9D61]/20 blur-[40px] scale-125'
+                : 'bg-transparent'
               }`}
           />
 
           {/* Main orb */}
           <div
             className={`relative w-56 h-56 rounded-full flex items-center justify-center transition-all duration-700 ${status === ConnectionStatus.CONNECTED
-                ? 'bg-[#C7D1A7] shadow-[inset_0_-8px_16px_rgba(0,0,0,0.1),0_20px_40px_rgba(88,99,50,0.15)] scale-100'
-                : 'bg-slate-200 shadow-lg scale-95 group-hover:scale-100'
+              ? 'bg-[#C7D1A7] shadow-[inset_0_-8px_16px_rgba(0,0,0,0.1),0_20px_40px_rgba(88,99,50,0.15)] scale-100'
+              : 'bg-slate-200 shadow-lg scale-95 group-hover:scale-100'
               }`}
           >
             {/* Visualizer inside orb */}
@@ -680,12 +680,13 @@ const App: React.FC = () => {
                       key={i}
                       className="w-1 rounded-full bg-[#586332]/60 transition-all duration-75"
                       style={{
-                        height: isSpeaking
+                        height: 'var(--bar-h, 8px)',
+                        '--bar-h': isSpeaking
                           ? `${20 + Math.sin(Date.now() / 100 + i * 0.8) * 30 + 30}px`
                           : isListening
                             ? `${10 + Math.random() * 20}px`
                             : '8px'
-                      }}
+                      } as React.CSSProperties}
                     />
                   ))}
                 </div>
